@@ -7,6 +7,7 @@ class Berry:
         self.x = x
         self.y = y
         self.surface = surface
+        self.eaten = False
 
     def draw(self):
         pygame.draw.circle(self.surface, [255, 0, 0], [self.x, self.y], 5)
@@ -16,3 +17,6 @@ class Berry:
 
     def getangleto(self, x, y):
         return atan2(self.y - y, self.x - x)
+
+    def eat(self):
+        self.eaten = True

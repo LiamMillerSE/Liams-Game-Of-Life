@@ -6,21 +6,21 @@ class Node:
         self.out_count = out_count
 
     def pushvalue(self, value):
-        if self.inputs.count <= self.in_count:
+        if len(self.inputs) <= self.in_count:
             self.inputs.append(value)
 
     def popvalue(self):
-        return self.outputs.pop()
+        return self.outputs.pop(0)
 
     def readytoprocess(self):
-        return self.inputs.count() == self.in_count
+        return len(self.inputs) == self.in_count
 
     def process(self):
         # perform operation
         pass
 
-    def processingfinished(self):
-        return self.outputs.count() == self.out_count
+    def outputcomplete(self):
+        return len(self.outputs) == 0
 
 
 class Negate(Node):
@@ -37,8 +37,18 @@ class StraightThrough(Node):
         Node.__init__(self, 1, 1)
 
     def process(self):
-        self.outputs.clear(self)
+        self.outputs.clear()
         self.outputs.append(self.inputs.pop())
+
+class Maximize(Node):
+    def __init__(self, value):
+        self.value = value
+        Node.__init__(self, 1, 1)
+
+    def process(self):
+        self.outputs.clear()
+        self.inputs.pop(0)
+        self.outputs.append(self.value)
 
 
 class Creature(Node):
@@ -50,5 +60,7 @@ class Creature(Node):
         # feed inputs into nodes then set outputs
         for n in self.nodes:
             while not n.readytoprocess():
-                n.pushvalue(self.inputs.pop())
+                n.pushvalue(self.inputs.pop(0))
             n.process()
+            while not n.outputcomplete():
+                self.outputs.append(n.popvalue())
